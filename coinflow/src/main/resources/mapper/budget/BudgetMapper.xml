@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.budget.mapper.BudgetMapper">
+
+    <select id="selectAll" resultType="me.sunlianhui.coinflow.modules.budget.entity.BudgetEntity">
+        SELECT * FROM cf_budget
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.budget.entity.BudgetEntity">
+        SELECT * FROM cf_budget WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.budget.entity.BudgetEntity">
+        INSERT INTO cf_budget (id, user_id, account_book_id, category_id, month, amount, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{accountBookId}, #{categoryId}, #{month}, #{amount}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.budget.entity.BudgetEntity">
+        UPDATE cf_budget
+        SET user_id = #{userId}, account_book_id = #{accountBookId}, category_id = #{categoryId}, month = #{month}, amount = #{amount}, updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_budget WHERE id = #{id}
+    </delete>
+
+</mapper>

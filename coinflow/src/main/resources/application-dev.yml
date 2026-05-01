@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: coin-flow
+  datasource:
+    url: jdbc:mysql://localhost:3306/coinflow?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+  jackson:
+    time-zone: Asia/Shanghai
+    date-format: yyyy-MM-dd HH:mm:ss
+  devtools:
+    restart:
+      exclude:
+        - me/sunlianhui/coinflow/modules/**/mapper/*
+        - mapper/**/*.xml
+
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: me.sunlianhui.coinflow.modules
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: assign_id            # Snowflake ID auto-injection
+      logic-delete-field: deleted   # If logical deletion is enabled
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+
+logging:
+  level:
+    root: info
+    me.sunlianhui.coinflow: debug
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n"
+
+# JWT Configuration (you can customize token expiration time)
+jwt:
+  secret: L5Ng4Wg5OjE6MbyNwZIj6EdHRTagNkaabop7VmV8UQM=
+  expire: 86400000

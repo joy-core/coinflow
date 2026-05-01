@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.asset.mapper.AssetAccountMapper">
+
+    <select id="selectAll" resultType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        SELECT * FROM cf_asset_account
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        SELECT * FROM cf_asset_account WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        INSERT INTO cf_asset_account (id, user_id, account_book_id, name, type, balance, is_hidden, sort_order, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{accountBookId}, #{name}, #{type}, #{balance}, #{isHidden}, #{sortOrder}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        UPDATE cf_asset_account
+        SET user_id = #{userId}, account_book_id = #{accountBookId}, name = #{name}, type = #{type}, balance = #{balance}, is_hidden = #{isHidden}, sort_order = #{sortOrder}, updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_asset_account WHERE id = #{id}
+    </delete>
+
+    <select id="selectAccountNameById" resultType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        SELECT id, name FROM cf_asset_account WHERE id = #{id} LIMIT 1
+    </select>
+
+</mapper>

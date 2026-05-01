@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.accountbook.mapper.AccountBookMapper">
+
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.accountbook.entity.AccountBookEntity">
+        SELECT * FROM cf_account_book WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.accountbook.entity.AccountBookEntity">
+        SELECT * FROM cf_account_book WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.accountbook.entity.AccountBookEntity">
+        INSERT INTO cf_account_book (id, user_id, name, icon, color, is_default, is_archived, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{name}, #{icon}, #{color}, #{isDefault}, #{isArchived}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.accountbook.entity.AccountBookEntity">
+        UPDATE cf_account_book
+        SET name = #{name}, icon = #{icon}, color = #{color}, is_default = #{isDefault}, is_archived = #{isArchived}, updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_account_book WHERE id = #{id}
+    </delete>
+
+</mapper>

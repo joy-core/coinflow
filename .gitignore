@@ -1,0 +1,62 @@
+# === Logs ===
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+hs_err_pid*
+spring.log
+
+# === AI Assistant ===
+.claude/
+
+# === Editor / IDE ===
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.iml
+*.iws
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+.project
+.classpath
+.settings/
+out/
+
+# === OS ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# === Java / Maven / Gradle ===
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+build/
+.mtj.tmp/
+*.ctxt
+/generated/
+
+# === Node / Frontend ===
+node_modules
+dist
+dist-ssr
+*.local
+
+# === Temporary / Backup ===
+*.tmp
+*.temp
+*.bak
+*.orig
+*~

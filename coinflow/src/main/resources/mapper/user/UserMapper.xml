@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.sunlianhui.coinflow.modules.user.mapper.UserMapper">
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.user.entity.UserEntity">
+        SELECT * FROM cf_user WHERE id = #{id} LIMIT 1
+    </select>
+
+    <select id="selectByUsername" resultType="me.sunlianhui.coinflow.modules.user.entity.UserEntity">
+        SELECT *
+        FROM cf_user
+        WHERE username = #{username} LIMIT 1
+    </select>
+
+    <select id="selectList" resultType="me.sunlianhui.coinflow.modules.user.entity.UserEntity">
+        SELECT * FROM cf_user
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.user.entity.UserEntity">
+        INSERT INTO cf_user (id, username, email, phone, password, avatar, created_at, updated_at)
+        VALUES (#{id}, #{username}, #{email}, #{phone}, #{password}, #{avatar}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="updateById" parameterType="me.sunlianhui.coinflow.modules.user.entity.UserEntity">
+        UPDATE cf_user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM cf_user WHERE id = #{id}
+    </delete>
+
+</mapper>
+

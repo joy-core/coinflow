@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.bill.mapper.BillMapper">
+
+    <select id="selectAll" resultType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        SELECT * FROM cf_account
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        SELECT * FROM cf_account WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        INSERT INTO cf_account (id, user_id, account_book_id, asset_account_id, category_id, type, amount, remark, image_url, location, happened_at, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{accountBookId}, #{assetAccountId}, #{categoryId}, #{type}, #{amount}, #{remark}, #{imageUrl}, #{location}, #{happenedAt}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        UPDATE cf_account
+        SET user_id = #{userId}, account_book_id = #{accountBookId}, asset_account_id = #{assetAccountId}, category_id = #{categoryId}, type = #{type}, amount = #{amount}, remark = #{remark}, image_url = #{imageUrl}, location = #{location}, happened_at = #{happenedAt}, updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_account WHERE id = #{id}
+    </delete>
+
+    <select id="selectTotalAmountByUserIdAndTypeAndMonth" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(amount), 0)
+        FROM cf_account
+        WHERE user_id = #{userId}
+          AND type = #{type}
+          AND happened_at &gt;= #{startDate}
+          AND happened_at &lt;= #{endDate}
+    </select>
+
+    <select id="selectCountByUserIdAndMonth" resultType="long">
+        SELECT COUNT(*)
+        FROM cf_account
+        WHERE user_id = #{userId}
+          AND happened_at &gt;= #{startDate}
+          AND happened_at &lt;= #{endDate}
+    </select>
+
+    <select id="selectCategoryStatsByUserIdAndMonth" resultType="java.util.Map">
+        SELECT c.name AS category_name,
+               SUM(a.amount) AS total_amount,
+               COUNT(*) AS count
+        FROM cf_account a
+        LEFT JOIN cf_account_category c ON a.category_id = c.id
+        WHERE a.user_id = #{userId}
+          AND a.type = #{type}
+          AND a.happened_at &gt;= #{startDate}
+          AND a.happened_at &lt;= #{endDate}
+        GROUP BY c.id, c.name
+        ORDER BY total_amount DESC
+    </select>
+
+    <select id="selectMonthlyStatsByUserId" resultType="java.util.Map">
+        SELECT DATE_FORMAT(happened_at, '%Y-%m') AS month,
+               COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS income,
+               COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS expense
+        FROM cf_account
+        WHERE user_id = #{userId}
+          AND happened_at &gt;= DATE_SUB(CURDATE(), INTERVAL #{months} MONTH)
+        GROUP BY DATE_FORMAT(happened_at, '%Y-%m')
+        ORDER BY month ASC
+    </select>
+
+    <select id="selectRecentByUserId" resultType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        SELECT * FROM cf_account
+        WHERE user_id = #{userId}
+        ORDER BY happened_at DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>
