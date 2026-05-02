@@ -176,7 +176,7 @@ const currentDate = computed(() => {
   })
 })
 
-// 概览数据
+// Overview data
 const totalIncome = ref(0)
 const totalExpense = ref(0)
 const incomeChange = ref(0)
@@ -185,7 +185,7 @@ const billCount = ref(0)
 const balance = computed(() => totalIncome.value - totalExpense.value)
 const balanceChange = ref(0)
 
-// 分类数据
+// Category data
 const categoryChartData = ref([])
 const categoryChart = computed(() => {
   const colors = ['#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899', '#14b8a6']
@@ -209,26 +209,26 @@ const categoryChart = computed(() => {
   }
 })
 
-// 趋势数据
+// Trend data
 const trendChartData = ref({ months: [], income: [], expense: [] })
 const trendChart = computed(() => {
   return {
     tooltip: { trigger: 'axis' },
-    legend: { data: ['收入', '支出'] },
+    legend: { data: ['Income', 'Expense'] },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: { type: 'category', data: trendChartData.value.months },
     yAxis: { type: 'value' },
     series: [
-      { name: '收入', type: 'line', data: trendChartData.value.income, smooth: true, lineStyle: { width: 3 }, itemStyle: { color: '#10b981' } },
-      { name: '支出', type: 'line', data: trendChartData.value.expense, smooth: true, lineStyle: { width: 3 }, itemStyle: { color: '#ef4444' } }
+      { name: 'Income', type: 'line', data: trendChartData.value.income, smooth: true, lineStyle: { width: 3 }, itemStyle: { color: '#10b981' } },
+      { name: 'Expense', type: 'line', data: trendChartData.value.expense, smooth: true, lineStyle: { width: 3 }, itemStyle: { color: '#ef4444' } }
     ]
   }
 })
 
-// 最近账单
+// Recent bills
 const recentBills = ref([])
 
-// 分类和账户映射
+// Category and account mapping
 const categoryMap = ref(new Map())
 const accountMap = ref(new Map())
 
@@ -246,7 +246,7 @@ function formatDate(date) {
   return d.toLocaleDateString('zh-CN')
 }
 
-// 加载概览数据
+// Load overview data
 async function loadOverview() {
   try {
     const { data } = await getOverview({ userId, period: chartPeriod.value })
@@ -262,7 +262,7 @@ async function loadOverview() {
   }
 }
 
-// 加载分类统计
+// Load category statistics
 async function loadCategoryStats() {
   try {
     const { data } = await getCategoryStats({ userId, type: 'EXPENSE', period: chartPeriod.value })
@@ -272,7 +272,7 @@ async function loadCategoryStats() {
   }
 }
 
-// 加载月度统计
+// Load monthly statistics
 async function loadMonthlyStats() {
   try {
     const { data } = await getMonthlyStats({ userId, months: trendPeriod.value })
@@ -286,7 +286,7 @@ async function loadMonthlyStats() {
   }
 }
 
-// 加载最近账单
+// Load recent bills
 async function loadRecentBills() {
   try {
     const { data } = await request.get('/bills/recent', { params: { userId, limit: 5 } })
@@ -296,7 +296,7 @@ async function loadRecentBills() {
   }
 }
 
-// 加载分类和账户名称映射
+// Load category and account name mapping
 async function loadMeta() {
   try {
     const [catRes, accRes] = await Promise.all([

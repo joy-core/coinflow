@@ -242,7 +242,7 @@ const saveBill = async () => {
 
 const deleteBill = async (id) => {
   await deleteBillById(id)
-  ElMessage.success('已删除')
+  ElMessage.success('Deleted')
   await loadData()
 }
 
@@ -459,7 +459,7 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
-/* 动画效果 */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -471,7 +471,7 @@ onMounted(async () => {
   }
 }
 
-/* 响应式设计 */
+/* Responsive Design */
 @media (max-width: 768px) {
   .filter-section {
     padding: 16px;

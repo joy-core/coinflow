@@ -263,10 +263,10 @@ const onForgotPassword = async () => {
   loading.value = true
   try {
     await axios.post('http://localhost:8080/api/users/forgot-password', forgotForm)
-    ElMessage.success('重置邮件已发送（模拟）')
+    ElMessage.success('Reset email sent (simulated)')
     activeTab.value = 'login'
   } catch (err) {
-    ElMessage.error('请求失败：' + (err.response?.data?.message || err.message))
+    ElMessage.error('Request failed: ' + (err.response?.data?.message || err.message))
   } finally {
     loading.value = false
   }
@@ -461,7 +461,7 @@ const onForgotPassword = async () => {
   color: #764ba2;
 }
 
-/* 动画效果 */
+/* Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -495,7 +495,7 @@ const onForgotPassword = async () => {
   }
 }
 
-/* 响应式设计 */
+/* Responsive Design */
 @media (max-width: 768px) {
   .login-wrapper {
     flex-direction: column;

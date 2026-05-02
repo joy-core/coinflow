@@ -109,8 +109,8 @@ const loadData = async () => {
   const accountsRes = await listAccounts(1)
   accounts.value = accountsRes.data
   
-  // 加载用户信息
-  // 这里应该从 API 获取，现在使用模拟数据
+  // Load user info
+  // This should be fetched from API, using mock data for now
   userInfo.value = {
     username: 'test',
     email: 'test@example.com'
@@ -119,17 +119,17 @@ const loadData = async () => {
 
 const changeTheme = (theme) => {
   setTheme(theme)
-  ElMessage.success('主题已切换')
+  ElMessage.success('Theme switched successfully')
 }
 
 const saveSettings = () => {
-  // 这里应该调用 API 保存设置
-  ElMessage.success('设置已保存')
+  // This should call API to save settings
+  ElMessage.success('Settings saved')
 }
 
 const updateUserInfo = () => {
-  // 这里应该调用 API 更新用户信息
-  ElMessage.success('用户信息已更新')
+  // This should call API to update user info
+  ElMessage.success('User info updated')
 }
 
 const openChangePasswordDialog = () => {
@@ -138,11 +138,11 @@ const openChangePasswordDialog = () => {
 
 const changePassword = () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    ElMessage.error('两次输入的密码不一致')
+    ElMessage.error('Passwords do not match')
     return
   }
-  // 这里应该调用 API 修改密码
-  ElMessage.success('密码已修改')
+  // This should call API to change password
+  ElMessage.success('Password changed')
   changePasswordDialogVisible.value = false
 }
 

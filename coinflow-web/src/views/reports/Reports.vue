@@ -206,7 +206,7 @@ const incomeCategoryChart = computed(() => {
     },
     series: [
       {
-        name: '收入分类',
+        name: 'Income Category',
         type: 'pie',
         radius: ['40%', '70%'],
         avoidLabelOverlap: false,
@@ -244,7 +244,7 @@ const monthlyChart = computed(() => {
       trigger: 'axis'
     },
     legend: {
-      data: ['收入', '支出']
+      data: ['Income', 'Expense']
     },
     xAxis: {
       type: 'category',
@@ -255,7 +255,7 @@ const monthlyChart = computed(() => {
     },
     series: [
       {
-        name: '收入',
+        name: 'Income',
         type: 'line',
         data: monthlyStats.value.map(item => item.income),
         smooth: true,
@@ -264,7 +264,7 @@ const monthlyChart = computed(() => {
         }
       },
       {
-        name: '支出',
+        name: 'Expense',
         type: 'line',
         data: monthlyStats.value.map(item => item.expense),
         smooth: true,
@@ -291,7 +291,7 @@ const generateCustomReport = async () => {
 }
 
 onMounted(() => {
-  // 默认加载最近30天的数据
+  // Load last 30 days data by default
   const endDate = new Date()
   const startDate = new Date()
   startDate.setDate(startDate.getDate() - 30)
