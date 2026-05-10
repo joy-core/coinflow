@@ -94,4 +94,13 @@ public class UserServiceImpl implements UserService {
 		String resetToken = jwtUtil.generateToken(user.getId(), user.getUsername());
 		System.out.println("Password reset token: " + resetToken);
 	}
+
+	@Override
+	public boolean verifyPassword(String username, String rawPassword) {
+		UserEntity user = userMapper.selectByUsername(username);
+		if (user == null) {
+			return false;
+		}
+		return passwordEncoder.matches(rawPassword, user.getPassword());
+	}
 }

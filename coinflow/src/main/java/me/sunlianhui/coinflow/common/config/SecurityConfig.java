@@ -36,6 +36,7 @@ public class SecurityConfig {
 								"/api/users/login",
 								"/api/users/register",   // Enable as needed
 								"/api/users/forgot-password",
+								"/api/users/reset-password",
 								"/captcha",
 								"/swagger-ui/**",
 								"/v3/api-docs/**",

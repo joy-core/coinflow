@@ -25,7 +25,10 @@ const routes = [
             { path: 'templates', component: () => import('@/views/templates/Templates.vue')},
             { path: 'recurring', component: () => import('@/views/recurring/Recurring.vue')},
             { path: 'reports', component: () => import('@/views/reports/Reports.vue')},
-            { path: 'settings', component: () => import('@/views/settings/Settings.vue')}
+            { path: 'settings', component: () => import('@/views/settings/Settings.vue')},
+            { path: 'transfer-records', component: () => import('@/views/transfer-records/TransferRecords.vue')},
+            { path: 'notifications', component: () => import('@/views/notifications/Notifications.vue')},
+            { path: 'feedback', component: () => import('@/views/feedback/Feedback.vue')}
         ],
         // You can add route guards later to check login status
     }

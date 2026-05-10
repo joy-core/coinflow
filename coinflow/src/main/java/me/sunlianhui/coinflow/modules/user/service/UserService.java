@@ -22,4 +22,6 @@ public interface UserService {
 	String login(String username, String password);
 
 	void forgotPassword(String email);
+
+	boolean verifyPassword(String username, String rawPassword);
 }

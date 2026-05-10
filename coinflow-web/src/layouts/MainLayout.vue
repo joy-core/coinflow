@@ -7,6 +7,11 @@
           <span class="logo-text">CoinFlow</span>
         </div>
         <div class="header-actions">
+          <el-badge :value="unreadCount" :hidden="unreadCount === 0" class="notification-badge">
+            <el-button type="text" @click="goToNotifications">
+              <el-icon size="20"><Bell /></el-icon>
+            </el-button>
+          </el-badge>
           <el-button type="primary" size="small" class="add-bill-button" @click="addBill">
             <el-icon><Plus /></el-icon>
             <span>Add Bill</span>
@@ -85,6 +90,18 @@
             <el-icon><Setting /></el-icon>
             <template #title>Settings</template>
           </el-menu-item>
+          <el-menu-item index="/main/transfer-records">
+            <el-icon><SwitchButton /></el-icon>
+            <template #title>Transfers</template>
+          </el-menu-item>
+          <el-menu-item index="/main/notifications">
+            <el-icon><Bell /></el-icon>
+            <template #title>Notifications</template>
+          </el-menu-item>
+          <el-menu-item index="/main/feedback">
+            <el-icon><ChatDotRound /></el-icon>
+            <template #title>Feedback</template>
+          </el-menu-item>
         </el-menu>
         <div class="sidebar-footer">
           <el-button type="text" class="collapse-button" @click="isCollapsed = !isCollapsed">
@@ -110,6 +127,8 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { getUserById } from '@/services/user'
+import { getUnreadCount } from '@/services/notification'
 import { 
   Wallet,
   House,
@@ -126,7 +145,9 @@ import {
   Plus,
   SwitchButton,
   CreditCard,
-  Folder
+  Folder,
+  Bell,
+  ChatDotRound
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -136,6 +157,7 @@ const isCollapsed = ref(false)
 const userName = ref('User')
 const userAvatar = ref('')
 const dropdownVisible = ref(false)
+const unreadCount = ref(0)
 
 // Watch route changes to update menu active state
 watch(
@@ -159,6 +181,10 @@ function goToSettings() {
   router.push('/main/settings')
 }
 
+function goToNotifications() {
+  router.push('/main/notifications')
+}
+
 function logout() {
   localStorage.removeItem('token')
   router.push('/login')
@@ -173,16 +199,45 @@ function handleDropdownVisible(visible) {
   dropdownVisible.value = visible
 }
 
-onMounted(() => {
+const getUserId = () => {
+  try {
+    const tokenStr = localStorage.getItem('token')
+    if (!tokenStr) return 1
+    const tokenObj = JSON.parse(tokenStr)
+    return tokenObj?.userId || tokenObj?.id || 1
+  } catch {
+    return 1
+  }
+}
+
+onMounted(async () => {
   // Restore sidebar state from local storage
   const savedCollapsed = localStorage.getItem('sidebarCollapsed')
   if (savedCollapsed !== null) {
     isCollapsed.value = savedCollapsed === 'true'
   }
-  
-  // Mock user info
-  userName.value = 'Test User'
-  userAvatar.value = 'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?f=y'
+
+  // Load user info from API
+  try {
+    const id = getUserId()
+    const res = await getUserById(id)
+    if (res.data) {
+      userName.value = res.data.username || 'User'
+      userAvatar.value = res.data.avatar || ''
+    }
+  } catch {
+    // User not found, keep default
+    userName.value = 'User'
+  }
+
+  // Load notification unread count
+  try {
+    const id = getUserId()
+    const res = await getUnreadCount(id)
+    unreadCount.value = res.data || 0
+  } catch {
+    unreadCount.value = 0
+  }
 })
 </script>
 
@@ -233,6 +288,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.notification-badge {
+  display: inline-flex;
 }
 
 .add-bill-button {

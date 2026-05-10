@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.feedback.mapper.FeedbackMapper">
+
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.feedback.entity.FeedbackEntity">
+        SELECT * FROM cf_feedback WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.feedback.entity.FeedbackEntity">
+        SELECT * FROM cf_feedback WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.feedback.entity.FeedbackEntity">
+        INSERT INTO cf_feedback (id, user_id, content, status, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{content}, #{status}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.feedback.entity.FeedbackEntity">
+        UPDATE cf_feedback
+        SET content = #{content}, status = #{status}, updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_feedback WHERE id = #{id}
+    </delete>
+
+</mapper>

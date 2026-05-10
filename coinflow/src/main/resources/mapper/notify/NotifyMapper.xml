@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.notify.mapper.NotifyMapper">
+
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.notify.entity.NotifyEntity">
+        SELECT * FROM cf_notify WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.notify.entity.NotifyEntity">
+        SELECT * FROM cf_notify WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.notify.entity.NotifyEntity">
+        INSERT INTO cf_notify (id, user_id, type, title, content, is_read, created_at)
+        VALUES (#{id}, #{userId}, #{type}, #{title}, #{content}, #{isRead}, #{createdAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.notify.entity.NotifyEntity">
+        UPDATE cf_notify
+        SET type = #{type}, title = #{title}, content = #{content}, is_read = #{isRead}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_notify WHERE id = #{id}
+    </delete>
+
+    <update id="markAllReadByUserId">
+        UPDATE cf_notify SET is_read = 1 WHERE user_id = #{userId} AND is_read = 0
+    </update>
+
+    <select id="selectUnreadCountByUserId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM cf_notify WHERE user_id = #{userId} AND is_read = 0
+    </select>
+
+</mapper>

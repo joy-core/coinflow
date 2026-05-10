@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.sunlianhui.coinflow.modules.transferrecord.mapper.TransferRecordMapper">
+
+    <select id="selectAll" resultType="me.sunlianhui.coinflow.modules.transferrecord.entity.TransferRecordEntity">
+        SELECT * FROM cf_transfer_record
+    </select>
+
+    <select id="selectById" resultType="me.sunlianhui.coinflow.modules.transferrecord.entity.TransferRecordEntity">
+        SELECT * FROM cf_transfer_record WHERE id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.transferrecord.entity.TransferRecordEntity">
+        SELECT * FROM cf_transfer_record WHERE user_id = #{userId} ORDER BY transferred_at DESC
+    </select>
+
+    <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.transferrecord.entity.TransferRecordEntity">
+        INSERT INTO cf_transfer_record (id, user_id, account_book_id, from_account_id, to_account_id, amount, fee, remark, transferred_at, created_at)
+        VALUES (#{id}, #{userId}, #{accountBookId}, #{fromAccountId}, #{toAccountId}, #{amount}, #{fee}, #{remark}, #{transferredAt}, #{createdAt})
+    </insert>
+
+    <update id="update" parameterType="me.sunlianhui.coinflow.modules.transferrecord.entity.TransferRecordEntity">
+        UPDATE cf_transfer_record
+        SET user_id = #{userId}, account_book_id = #{accountBookId}, from_account_id = #{fromAccountId}, to_account_id = #{toAccountId}, amount = #{amount}, fee = #{fee}, remark = #{remark}, transferred_at = #{transferredAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM cf_transfer_record WHERE id = #{id}
+    </delete>
+
+</mapper>

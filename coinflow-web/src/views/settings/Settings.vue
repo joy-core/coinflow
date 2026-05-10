@@ -42,6 +42,9 @@
           <el-form-item label="Email">
             <el-input v-model="userInfo.email" />
           </el-form-item>
+          <el-form-item label="Phone">
+            <el-input v-model="userInfo.phone" />
+          </el-form-item>
           <el-form-item label="Change Password">
             <el-button type="primary" @click="openChangePasswordDialog">Change Password</el-button>
           </el-form-item>
@@ -78,11 +81,13 @@ import { ElMessage } from 'element-plus'
 import { themes, getCurrentTheme, setTheme } from '@/services/theme'
 import { listCategories } from '@/services/category'
 import { listAccounts } from '@/services/account'
+import { getUserById, updateUser, changePassword as apiChangePassword } from '@/services/user'
 
 const activeTab = ref('0')
 const categories = ref([])
 const accounts = ref([])
 const changePasswordDialogVisible = ref(false)
+const userId = ref(1)
 
 const settings = ref({
   theme: getCurrentTheme(),
@@ -93,7 +98,8 @@ const settings = ref({
 
 const userInfo = ref({
   username: '',
-  email: ''
+  email: '',
+  phone: ''
 })
 
 const passwordForm = ref({
@@ -102,18 +108,35 @@ const passwordForm = ref({
   confirmPassword: ''
 })
 
+const getUserId = () => {
+  try {
+    const tokenStr = localStorage.getItem('token')
+    if (!tokenStr) return 1
+    const tokenObj = JSON.parse(tokenStr)
+    return tokenObj?.userId || tokenObj?.id || 1
+  } catch {
+    return 1
+  }
+}
+
 const loadData = async () => {
-  const categoriesRes = await listCategories(1)
+  userId.value = getUserId()
+
+  const categoriesRes = await listCategories(userId.value)
   categories.value = categoriesRes.data
-  
-  const accountsRes = await listAccounts(1)
+
+  const accountsRes = await listAccounts(userId.value)
   accounts.value = accountsRes.data
-  
-  // Load user info
-  // This should be fetched from API, using mock data for now
-  userInfo.value = {
-    username: 'test',
-    email: 'test@example.com'
+
+  try {
+    const userRes = await getUserById(userId.value)
+    if (userRes.data) {
+      userInfo.value.username = userRes.data.username || ''
+      userInfo.value.email = userRes.data.email || ''
+      userInfo.value.phone = userRes.data.phone || ''
+    }
+  } catch {
+    // User not found, keep empty
   }
 }
 
@@ -122,26 +145,47 @@ const changeTheme = (theme) => {
   ElMessage.success('Theme switched successfully')
 }
 
-const saveSettings = () => {
-  // This should call API to save settings
+const saveSettings = async () => {
+  // Settings like theme/language/default are stored locally for now
+  localStorage.setItem('language', settings.value.language)
+  localStorage.setItem('defaultCategory', settings.value.defaultCategory)
+  localStorage.setItem('defaultAccount', settings.value.defaultAccount)
   ElMessage.success('Settings saved')
 }
 
-const updateUserInfo = () => {
-  // This should call API to update user info
+const updateUserInfo = async () => {
+  await updateUser({
+    id: userId.value,
+    username: userInfo.value.username,
+    email: userInfo.value.email,
+    phone: userInfo.value.phone
+  })
   ElMessage.success('User info updated')
 }
 
 const openChangePasswordDialog = () => {
+  passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' }
   changePasswordDialogVisible.value = true
 }
 
-const changePassword = () => {
+const changePassword = async () => {
+  if (!passwordForm.value.oldPassword || !passwordForm.value.newPassword || !passwordForm.value.confirmPassword) {
+    ElMessage.error('Please fill in all password fields')
+    return
+  }
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
     ElMessage.error('Passwords do not match')
     return
   }
-  // This should call API to change password
+  if (passwordForm.value.newPassword.length < 6) {
+    ElMessage.error('Password must be at least 6 characters')
+    return
+  }
+  await apiChangePassword({
+    userId: userId.value.toString(),
+    oldPassword: passwordForm.value.oldPassword,
+    newPassword: passwordForm.value.newPassword
+  })
   ElMessage.success('Password changed')
   changePasswordDialogVisible.value = false
 }

@@ -76,4 +76,10 @@
         LIMIT #{limit}
     </select>
 
+    <select id="selectByRemarkContaining" resultType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        SELECT * FROM cf_account
+        WHERE remark LIKE CONCAT('%', #{pattern}, '%')
+        ORDER BY happened_at DESC
+    </select>
+
 </mapper>

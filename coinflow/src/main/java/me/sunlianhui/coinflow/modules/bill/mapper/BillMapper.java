@@ -24,4 +24,6 @@ public interface BillMapper {
 
     List<BillEntity> selectRecentByUserId(Long userId, int limit);
 
+    List<BillEntity> selectByRemarkContaining(String pattern);
+
 }
