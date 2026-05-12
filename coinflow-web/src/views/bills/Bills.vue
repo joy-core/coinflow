@@ -11,7 +11,9 @@
         </div>
       </template>
 
-      <div class="filter-section">
+      <el-tabs v-model="activeTab" class="bills-tabs">
+        <el-tab-pane label="Table View" name="table">
+          <div class="filter-section">
         <el-row :gutter="20">
           <el-col :span="6">
             <el-date-picker
@@ -80,6 +82,18 @@
           </template>
         </el-table-column>
       </el-table>
+        </el-tab-pane>
+        <el-tab-pane label="Calendar View" name="calendar">
+          <BillsCalendar
+            :bills="bills"
+            :categories="categories"
+            :accounts="accounts"
+            @edit-bill="openDialog"
+            @add-bill-on-date="openDialogForDate"
+            @month-change="handleMonthChange"
+          />
+        </el-tab-pane>
+      </el-tabs>
 
       <el-dialog v-model="dialogVisible" title="Add Entry" width="500px" class="bill-dialog">
         <el-form :model="form" label-width="100px" class="bill-form">
@@ -143,6 +157,7 @@ import {
 import { listCategories } from '@/services/category'
 import { listAccounts } from '@/services/account'
 import { Plus, Search } from '@element-plus/icons-vue'
+import BillsCalendar from './BillsCalendar.vue'
 
 const bills = ref([])
 const categories = ref([])
@@ -152,6 +167,7 @@ const dateRange = ref([])
 const billType = ref('')
 const categoryId = ref('')
 const keyword = ref('')
+const activeTab = ref('table')
 
 const form = ref({
   id: null,
@@ -202,9 +218,7 @@ const openDialog = (row = null) => {
   dialogVisible.value = true
   if (row) {
     form.value = { ...row }
-    if (row.date) {
-      form.value.date = new Date(row.date)
-    }
+    form.value.date = new Date(row.happenedAt || row.date)
   } else {
     form.value = {
       id: null,
@@ -226,6 +240,29 @@ const handleTypeChange = () => {
   form.value.accountId = ''
   form.value.fromAccountId = ''
   form.value.toAccountId = ''
+}
+
+const openDialogForDate = (date) => {
+  form.value = {
+    id: null,
+    date: date ? new Date(date) : new Date(),
+    type: 'EXPENSE',
+    categoryId: '',
+    amount: 0,
+    accountId: '',
+    fromAccountId: '',
+    toAccountId: '',
+    description: '',
+    userId: 1
+  }
+  dialogVisible.value = true
+}
+
+const handleMonthChange = ({ year, month }) => {
+  const start = new Date(year, month, 1)
+  const end = new Date(year, month + 1, 0)
+  dateRange.value = [start, end]
+  loadData()
 }
 
 const saveBill = async () => {
@@ -297,6 +334,10 @@ onMounted(async () => {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
   background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+}
+
+.bills-tabs {
+  padding: 0;
 }
 
 .filter-section {

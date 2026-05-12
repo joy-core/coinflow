@@ -24,6 +24,14 @@ public class BillServiceImpl implements BillService {
         List<BillEntity> entities = billMapper.selectAll();
         return entities.stream()
                 .filter(entity -> entity.getUserId().equals(params.get("userId")))
+                .filter(entity -> {
+                    Date happenedAt = entity.getHappenedAt();
+                    if (happenedAt == null) return false;
+                    Date start = (Date) params.get("startDate");
+                    Date end = (Date) params.get("endDate");
+                    return (start == null || !happenedAt.before(start))
+                        && (end == null || !happenedAt.after(end));
+                })
                 .map(entity -> {
                     BillModel model = new BillModel();
                     BeanUtils.copyProperties(entity, model);
