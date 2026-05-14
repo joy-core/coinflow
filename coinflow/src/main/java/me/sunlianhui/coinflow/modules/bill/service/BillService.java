@@ -12,5 +12,8 @@ public interface BillService {
     void deleteById(Long id);
     Map<String, Object> getStatistics(Map<String, Object> params);
     List<BillModel> getRecentBills(Long userId, int limit);
+    List<BillModel> listBillsForExport(Long userId, java.util.Date startDate, java.util.Date endDate);
+    byte[] exportToExcel(List<BillModel> bills) throws java.io.IOException;
+    byte[] exportToCsv(List<BillModel> bills) throws java.io.IOException;
 
 }

@@ -27,4 +27,8 @@
         DELETE FROM cf_budget WHERE id = #{id}
     </delete>
 
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.budget.entity.BudgetEntity">
+        SELECT * FROM cf_budget WHERE user_id = #{userId} ORDER BY month ASC
+    </select>
+
 </mapper>

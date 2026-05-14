@@ -4,10 +4,24 @@
       <template #header>
         <div class="card-header">
           <h2 class="card-title">Bill Management</h2>
-          <el-button type="primary" @click="openDialog" class="add-bill-button">
-            <el-icon><Plus /></el-icon>
-            <span>Add Entry</span>
-          </el-button>
+          <div class="header-actions">
+            <el-dropdown @command="handleExport" class="export-dropdown">
+              <el-button type="default" class="export-button">
+                <el-icon><Download /></el-icon>
+                <span>Export</span>
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="xlsx">Export as Excel</el-dropdown-item>
+                  <el-dropdown-item command="csv">Export as CSV</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+            <el-button type="primary" @click="openDialog" class="add-bill-button">
+              <el-icon><Plus /></el-icon>
+              <span>Add Entry</span>
+            </el-button>
+          </div>
         </div>
       </template>
 
@@ -152,12 +166,14 @@ import {
   listBills,
   addBill,
   updateBill,
-  deleteBillById
+  deleteBillById,
+  exportBills
 } from '@/services/bill'
 import { listCategories } from '@/services/category'
 import { listAccounts } from '@/services/account'
-import { Plus, Search } from '@element-plus/icons-vue'
+import { Plus, Search, Download } from '@element-plus/icons-vue'
 import BillsCalendar from './BillsCalendar.vue'
+import { useBillForm } from '@/composables/useBillForm'
 
 const bills = ref([])
 const categories = ref([])
@@ -169,18 +185,8 @@ const categoryId = ref('')
 const keyword = ref('')
 const activeTab = ref('table')
 
-const form = ref({
-  id: null,
-  date: new Date(),
-  type: 'EXPENSE',
-  categoryId: '',
-  amount: 0,
-  accountId: '',
-  fromAccountId: '',
-  toAccountId: '',
-  description: '',
-  userId: 1
-})
+const defaultAccountBookId = ref(1)
+const { form, mapToBackend, mapFromBackend, resetForm } = useBillForm(1)
 
 const filteredCategories = computed(() => {
   if (form.value.type === 'INCOME') {
@@ -217,21 +223,10 @@ const loadAccounts = async () => {
 const openDialog = (row = null) => {
   dialogVisible.value = true
   if (row) {
-    form.value = { ...row }
-    form.value.date = new Date(row.happenedAt || row.date)
+    const mapped = mapFromBackend(row)
+    form.value = { ...form.value, ...mapped }
   } else {
-    form.value = {
-      id: null,
-      date: new Date(),
-      type: 'EXPENSE',
-      categoryId: '',
-      amount: 0,
-      accountId: '',
-      fromAccountId: '',
-      toAccountId: '',
-      description: '',
-      userId: 1
-    }
+    resetForm()
   }
 }
 
@@ -243,18 +238,8 @@ const handleTypeChange = () => {
 }
 
 const openDialogForDate = (date) => {
-  form.value = {
-    id: null,
-    date: date ? new Date(date) : new Date(),
-    type: 'EXPENSE',
-    categoryId: '',
-    amount: 0,
-    accountId: '',
-    fromAccountId: '',
-    toAccountId: '',
-    description: '',
-    userId: 1
-  }
+  resetForm()
+  form.value.date = date ? new Date(date) : new Date()
   dialogVisible.value = true
 }
 
@@ -266,14 +251,15 @@ const handleMonthChange = ({ year, month }) => {
 }
 
 const saveBill = async () => {
-  if (form.value.id) {
-    await updateBill(form.value)
+  const payload = mapToBackend(defaultAccountBookId.value)
+  if (payload.id) {
+    await updateBill(payload)
   } else {
-    form.value.userId = 1
-    await addBill(form.value)
+    await addBill(payload)
   }
   ElMessage.success('Operation successful')
   dialogVisible.value = false
+  resetForm()
   await loadData()
 }
 
@@ -281,6 +267,24 @@ const deleteBill = async (id) => {
   await deleteBillById(id)
   ElMessage.success('Deleted')
   await loadData()
+}
+
+const handleExport = async (format) => {
+  const params = {
+    userId: 1,
+    format,
+    startDate: dateRange.value[0]?.toISOString() || '',
+    endDate: dateRange.value[1]?.toISOString() || ''
+  }
+  const res = await exportBills(params)
+  const blob = new Blob([res.data])
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `bills.${format === 'csv' ? 'csv' : 'xlsx'}`
+  link.click()
+  URL.revokeObjectURL(url)
+  ElMessage.success(`Exported as ${format.toUpperCase()}`)
 }
 
 onMounted(async () => {
@@ -310,6 +314,32 @@ onMounted(async () => {
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid var(--border-light);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.export-dropdown {
+  display: inline-block;
+}
+
+.export-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.export-button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
 }
 
 .card-title {

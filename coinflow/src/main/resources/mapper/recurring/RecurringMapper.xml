@@ -27,4 +27,8 @@
         DELETE FROM cf_recurring WHERE id = #{id}
     </delete>
 
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.recurring.entity.RecurringEntity">
+        SELECT * FROM cf_recurring WHERE user_id = #{userId} ORDER BY start_date DESC
+    </select>
+
 </mapper>

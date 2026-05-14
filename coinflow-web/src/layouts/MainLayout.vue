@@ -122,11 +122,13 @@
       </el-main>
     </el-container>
   </el-container>
+  <QuickAddBillDialog v-model="quickAddVisible" @bill-added="handleBillAdded" />
 </template>
 
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { getUserById } from '@/services/user'
 import { getUnreadCount } from '@/services/notification'
 import { 
@@ -150,6 +152,8 @@ import {
   ChatDotRound
 } from '@element-plus/icons-vue'
 
+import QuickAddBillDialog from '@/components/QuickAddBillDialog.vue'
+
 const router = useRouter()
 const route = useRoute()
 const activeMenu = ref(route.path)
@@ -158,6 +162,7 @@ const userName = ref('User')
 const userAvatar = ref('')
 const dropdownVisible = ref(false)
 const unreadCount = ref(0)
+const quickAddVisible = ref(false)
 
 // Watch route changes to update menu active state
 watch(
@@ -191,8 +196,11 @@ function logout() {
 }
 
 function addBill() {
-  // Navigate to bill add page
-  router.push('/main/bills')
+  quickAddVisible.value = true
+}
+
+function handleBillAdded() {
+  ElMessage.success('Bill added successfully')
 }
 
 function handleDropdownVisible(visible) {

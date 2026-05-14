@@ -19,3 +19,7 @@ export function deleteBillById(id: number) {
 export function getBillStatistics(params: any) {
     return request.get('/bills/statistics', { params })
 }
+
+export function exportBills(params: { userId?: number; startDate?: string; endDate?: string; format?: string }) {
+    return request.get('/bills/export', { params, responseType: 'blob' })
+}

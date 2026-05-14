@@ -53,6 +53,41 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+
+      <el-tab-pane label="Data Management">
+        <el-form label-width="160px">
+          <el-form-item label="Export Data">
+            <el-button type="primary" @click="handleExport" :loading="exporting">
+              <el-icon><Download /></el-icon>
+              <span>Export All Data (JSON)</span>
+            </el-button>
+            <span class="form-tip">Download all bills, categories, accounts, and more as a JSON file.</span>
+          </el-form-item>
+
+          <el-form-item label="Import Data">
+            <el-upload
+              action=""
+              :auto-upload="false"
+              :show-file-list="true"
+              :limit="1"
+              accept=".json"
+              :on-change="handleFileSelect"
+            >
+              <el-button type="warning">
+                <el-icon><Upload /></el-icon>
+                <span>Select JSON File</span>
+              </el-button>
+            </el-upload>
+            <span class="form-tip">Import will merge data. Existing records with the same ID will be skipped.</span>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="danger" @click="handleImport" :loading="importing" :disabled="!selectedFile">
+              Start Import
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
 
     <el-dialog v-model="changePasswordDialogVisible" title="Change Password">
@@ -77,11 +112,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { themes, getCurrentTheme, setTheme } from '@/services/theme'
 import { listCategories } from '@/services/category'
 import { listAccounts } from '@/services/account'
 import { getUserById, updateUser, changePassword as apiChangePassword } from '@/services/user'
+import { exportBackup, importBackup } from '@/services/backup'
+import { Download, Upload } from '@element-plus/icons-vue'
 
 const activeTab = ref('0')
 const categories = ref([])
@@ -107,6 +144,10 @@ const passwordForm = ref({
   newPassword: '',
   confirmPassword: ''
 })
+
+const exporting = ref(false)
+const importing = ref(false)
+const selectedFile = ref(null)
 
 const getUserId = () => {
   try {
@@ -190,7 +231,69 @@ const changePassword = async () => {
   changePasswordDialogVisible.value = false
 }
 
+const handleExport = async () => {
+  exporting.value = true
+  try {
+    const res = await exportBackup(userId.value)
+    const json = JSON.stringify(res.data, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `coinflow-backup-${new Date().toISOString().slice(0, 10)}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    ElMessage.success('Data exported successfully')
+  } catch {
+    ElMessage.error('Failed to export data')
+  } finally {
+    exporting.value = false
+  }
+}
+
+const handleFileSelect = (file) => {
+  selectedFile.value = file.raw
+}
+
+const handleImport = async () => {
+  if (!selectedFile.value) {
+    ElMessage.error('Please select a JSON file')
+    return
+  }
+  try {
+    await ElMessageBox.confirm(
+      'This will import all data from the selected file. Existing data may be duplicated. Continue?',
+      'Confirm Import',
+      { confirmButtonText: 'Import', cancelButtonText: 'Cancel', type: 'warning' }
+    )
+  } catch {
+    return
+  }
+
+  importing.value = true
+  try {
+    const text = await selectedFile.value.text()
+    const data = JSON.parse(text)
+    await importBackup(data, userId.value)
+    ElMessage.success('Data imported successfully')
+    selectedFile.value = null
+    await loadData()
+  } catch (e) {
+    ElMessage.error('Failed to import data: ' + (e.message || 'Unknown error'))
+  } finally {
+    importing.value = false
+  }
+}
+
 onMounted(() => {
   loadData()
 })
 </script>
+
+<style scoped>
+.form-tip {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-left: 12px;
+}
+</style>

@@ -1,6 +1,7 @@
 package me.sunlianhui.coinflow.modules.bill.mapper;
 
 import me.sunlianhui.coinflow.modules.bill.entity.BillEntity;
+import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface BillMapper {
@@ -25,5 +26,10 @@ public interface BillMapper {
     List<BillEntity> selectRecentByUserId(Long userId, int limit);
 
     List<BillEntity> selectByRemarkContaining(String pattern);
+
+    List<BillEntity> selectByUserIdWithFilters(
+            @Param("userId") Long userId,
+            @Param("startDate") java.util.Date startDate,
+            @Param("endDate") java.util.Date endDate);
 
 }

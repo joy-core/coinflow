@@ -19,4 +19,8 @@ public class BillModel {
     private String location;
     private Date happenedAt;
 
+    // Transient fields for display (not persisted)
+    private String categoryName;
+    private String accountName;
+
 }

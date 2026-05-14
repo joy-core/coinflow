@@ -11,4 +11,6 @@ public interface BudgetMapper {
     void update(BudgetEntity entity);
     void deleteById(Long id);
 
+    java.util.List<BudgetEntity> selectByUserId(@org.apache.ibatis.annotations.Param("userId") Long userId);
+
 }

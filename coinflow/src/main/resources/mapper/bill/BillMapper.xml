@@ -82,4 +82,17 @@
         ORDER BY happened_at DESC
     </select>
 
+    <select id="selectByUserIdWithFilters" resultType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
+        SELECT a.*
+        FROM cf_account a
+        WHERE a.user_id = #{userId}
+        <if test="startDate != null">
+            AND a.happened_at &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND a.happened_at &lt;= #{endDate}
+        </if>
+        ORDER BY a.happened_at DESC
+    </select>
+
 </mapper>

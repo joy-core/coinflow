@@ -31,4 +31,8 @@
         SELECT id, name FROM cf_asset_account WHERE id = #{id} LIMIT 1
     </select>
 
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.asset.entity.AssetAccountEntity">
+        SELECT * FROM cf_asset_account WHERE user_id = #{userId} ORDER BY sort_order ASC
+    </select>
+
 </mapper>

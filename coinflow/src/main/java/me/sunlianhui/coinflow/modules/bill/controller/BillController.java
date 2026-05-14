@@ -4,7 +4,12 @@ import me.sunlianhui.coinflow.common.web.R;
 import me.sunlianhui.coinflow.modules.bill.model.BillModel;
 import me.sunlianhui.coinflow.modules.bill.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -44,6 +49,33 @@ public class BillController {
     public R getRecentBills(@RequestParam(defaultValue = "1") Long userId,
                             @RequestParam(defaultValue = "10") int limit) {
         return R.success(billService.getRecentBills(userId, limit));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportBills(
+            @RequestParam(defaultValue = "1") Long userId,
+            @RequestParam(required = false) Date startDate,
+            @RequestParam(required = false) Date endDate,
+            @RequestParam(defaultValue = "xlsx") String format) throws IOException {
+        var bills = billService.listBillsForExport(userId, startDate, endDate);
+        byte[] data;
+        String filename;
+        MediaType contentType;
+
+        if ("csv".equalsIgnoreCase(format)) {
+            data = billService.exportToCsv(bills);
+            filename = "bills.csv";
+            contentType = MediaType.parseMediaType("text/csv");
+        } else {
+            data = billService.exportToExcel(bills);
+            filename = "bills.xlsx";
+            contentType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(contentType);
+        headers.setContentDispositionFormData("attachment", filename);
+        return ResponseEntity.ok().headers(headers).body(data);
     }
 
 }

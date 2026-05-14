@@ -27,4 +27,8 @@
         DELETE FROM cf_template WHERE id = #{id}
     </delete>
 
+    <select id="selectByUserId" resultType="me.sunlianhui.coinflow.modules.template.entity.TemplateEntity">
+        SELECT * FROM cf_template WHERE user_id = #{userId} ORDER BY created_at DESC
+    </select>
+
 </mapper>
