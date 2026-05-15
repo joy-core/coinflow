@@ -18,6 +18,8 @@ public class BillEntity {
     private String imageUrl;
     private String location;
     private Date happenedAt;
+    private String tags;
+    private Boolean isReimbursed;
     private Date createdAt;
     private Date updatedAt;
 

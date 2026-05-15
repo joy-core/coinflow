@@ -13,13 +13,13 @@
     </select>
 
     <insert id="insert" parameterType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
-        INSERT INTO cf_account (id, user_id, account_book_id, asset_account_id, category_id, type, amount, remark, image_url, location, happened_at, created_at, updated_at)
-        VALUES (#{id}, #{userId}, #{accountBookId}, #{assetAccountId}, #{categoryId}, #{type}, #{amount}, #{remark}, #{imageUrl}, #{location}, #{happenedAt}, #{createdAt}, #{updatedAt})
+        INSERT INTO cf_account (id, user_id, account_book_id, asset_account_id, category_id, type, amount, remark, image_url, location, happened_at, tags, is_reimbursed, created_at, updated_at)
+        VALUES (#{id}, #{userId}, #{accountBookId}, #{assetAccountId}, #{categoryId}, #{type}, #{amount}, #{remark}, #{imageUrl}, #{location}, #{happenedAt}, #{tags}, #{isReimbursed}, #{createdAt}, #{updatedAt})
     </insert>
 
     <update id="update" parameterType="me.sunlianhui.coinflow.modules.bill.entity.BillEntity">
         UPDATE cf_account
-        SET user_id = #{userId}, account_book_id = #{accountBookId}, asset_account_id = #{assetAccountId}, category_id = #{categoryId}, type = #{type}, amount = #{amount}, remark = #{remark}, image_url = #{imageUrl}, location = #{location}, happened_at = #{happenedAt}, updated_at = #{updatedAt}
+        SET user_id = #{userId}, account_book_id = #{accountBookId}, asset_account_id = #{assetAccountId}, category_id = #{categoryId}, type = #{type}, amount = #{amount}, remark = #{remark}, image_url = #{imageUrl}, location = #{location}, happened_at = #{happenedAt}, tags = #{tags}, is_reimbursed = #{isReimbursed}, updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
 
@@ -94,5 +94,36 @@
         </if>
         ORDER BY a.happened_at DESC
     </select>
+
+    <select id="selectTagStatsByUserId" resultType="java.util.Map">
+        SELECT tag_name AS tag,
+               SUM(tag_amount) AS total_amount,
+               COUNT(*) AS count
+        FROM (
+            SELECT TRIM(SUBSTRING_INDEX(SUBSTRING_INDEX(a.tags, ',', n.n), ',', -1)) AS tag_name,
+                   a.amount AS tag_amount
+            FROM cf_account a
+            JOIN (
+                SELECT 1 AS n UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
+                UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
+            ) n ON CHAR_LENGTH(a.tags) - CHAR_LENGTH(REPLACE(a.tags, ',', '')) >= n.n - 1
+            WHERE a.user_id = #{userId}
+              AND a.tags IS NOT NULL AND a.tags != ''
+              <if test="startDate != null">
+                AND a.happened_at &gt;= #{startDate}
+              </if>
+              <if test="endDate != null">
+                AND a.happened_at &lt;= #{endDate}
+              </if>
+        ) AS tag_data
+        GROUP BY tag_name
+        ORDER BY total_amount DESC
+    </select>
+
+    <update id="updateReimbursed">
+        UPDATE cf_account
+        SET is_reimbursed = #{isReimbursed}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
 
 </mapper>

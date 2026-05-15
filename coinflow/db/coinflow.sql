@@ -34,6 +34,8 @@ CREATE TABLE `cf_account` (
   `image_url` varchar(255) DEFAULT NULL COMMENT '图片凭证 URL',
   `location` varchar(100) DEFAULT NULL COMMENT '位置记录',
   `happened_at` datetime NOT NULL COMMENT '发生时间',
+  `tags` varchar(255) DEFAULT NULL COMMENT '标签，逗号分隔',
+  `is_reimbursed` tinyint(1) DEFAULT '0' COMMENT '是否可报销',
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)

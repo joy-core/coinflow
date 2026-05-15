@@ -32,4 +32,11 @@ public interface BillMapper {
             @Param("startDate") java.util.Date startDate,
             @Param("endDate") java.util.Date endDate);
 
+    List<java.util.Map<String, Object>> selectTagStatsByUserId(
+            @Param("userId") Long userId,
+            @Param("startDate") java.util.Date startDate,
+            @Param("endDate") java.util.Date endDate);
+
+    void updateReimbursed(@Param("id") Long id, @Param("isReimbursed") Boolean isReimbursed);
+
 }

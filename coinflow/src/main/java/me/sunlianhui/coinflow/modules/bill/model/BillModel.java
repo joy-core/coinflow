@@ -22,5 +22,7 @@ public class BillModel {
     // Transient fields for display (not persisted)
     private String categoryName;
     private String accountName;
+    private String tags;
+    private Boolean isReimbursed;
 
 }

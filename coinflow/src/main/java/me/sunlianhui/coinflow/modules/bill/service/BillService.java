@@ -15,5 +15,7 @@ public interface BillService {
     List<BillModel> listBillsForExport(Long userId, java.util.Date startDate, java.util.Date endDate);
     byte[] exportToExcel(List<BillModel> bills) throws java.io.IOException;
     byte[] exportToCsv(List<BillModel> bills) throws java.io.IOException;
+    void toggleReimbursed(Long id, Boolean isReimbursed);
+    List<java.util.Map<String, Object>> getTagStats(Long userId, java.util.Date startDate, java.util.Date endDate);
 
 }
